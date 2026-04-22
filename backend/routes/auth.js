@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const getDB = require("../db");
+const { getDB } = require("../db");
 
 // REGISTER
 router.post("/register", (req, res) => {
