@@ -10,11 +10,10 @@ services:
       MYSQL_DATABASE: user_db
       MYSQL_USER: appuser
       MYSQL_PASSWORD: 1234
-    volumes:
-      - db_data:/var/lib/mysql
+    
 
   backend1:
-    build: ./backend
+    image: arikaran0007/backend:v1
     container_name: backend1
     restart: always
     environment:
@@ -24,7 +23,7 @@ services:
       DB_NAME: user_db
 
   backend2:
-    build: ./backend
+    image: arikaran0007/backend:v1
     container_name: backend2
     restart: always
     environment:
@@ -34,16 +33,13 @@ services:
       DB_NAME: user_db
 
   frontend:
-    image: myapp:v1
+    image: arikaran0007/frontend:latest
     container_name: frontend
     depends_on:
       - backend1
       - backend2
     ports:
       - "8080:80"
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/nginx.conf
-      - ./frontend/html:/usr/share/nginx/html
+    
 
-volumes:
-  db_data:
+
