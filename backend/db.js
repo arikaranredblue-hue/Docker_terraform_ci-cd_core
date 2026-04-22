@@ -2,7 +2,7 @@ const mysql = require("mysql2");
 
 let db;
 
-function connectWithRetry() {
+function connectWithRetry(callback) {
   db = mysql.createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -10,16 +10,19 @@ function connectWithRetry() {
     database: process.env.DB_NAME
   });
 
-  db.connect(err => {
+  db.connect((err) => {
     if (err) {
-      console.log("DB not ready, retrying...");
-      setTimeout(connectWithRetry, 5000);
+      console.log("❌ DB not ready, retrying in 3 sec...");
+      setTimeout(() => connectWithRetry(callback), 3000);
     } else {
-      console.log("Connected to DB ✅");
+      console.log("✅ Connected to DB");
+      callback(); // only continue after DB is ready
     }
   });
 }
 
-connectWithRetry();
+function getDB() {
+  return db;
+}
 
-module.exports = () => db;
+module.exports = { connectWithRetry, getDB };
