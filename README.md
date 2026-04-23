@@ -97,7 +97,7 @@ http://<EC2-PUBLIC-IP>:8080
 
 ---
 
-## 📚 Learning Outcome
+## 📚 Learning Outcomes
 
 This project demonstrates:
 
