@@ -4,10 +4,8 @@ on:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'backend/**'
-      - 'frontend/**'
-      - '.github/workflows/deploy.yaml'
+    paths:
+      - '.gitignore'
 
 
 jobs:
