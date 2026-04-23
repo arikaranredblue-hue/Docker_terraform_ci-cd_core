@@ -1,124 +1,56 @@
-# 🚀 Full CI/CD Docker Deployment on AWS EC2
+# 🚀 Full Stack DevOps Deployment Pipeline (AWS + Docker + CI/CD)
 
-This project demonstrates a **complete DevOps pipeline** for deploying a full-stack application using:
+## 📌 Overview
 
-* 🐳 Docker & Docker Compose
-* ☁️ AWS EC2
-* 🔁 GitHub Actions (CI/CD)
-* 🗄️ MariaDB
-* 🌐 Nginx (Frontend)
+This project is a production-style DevOps implementation where a multi-tier application is deployed on AWS using Infrastructure as Code, containerization, and CI/CD automation.
 
----
+The system follows a real-world architecture pattern with:
 
-## 📌 Architecture
-
-```
-GitHub Push → GitHub Actions → Docker Build → Docker Hub
-                                      ↓
-                                   EC2 Server
-                                      ↓
-                          Docker Compose Deployment
-```
+- Custom Nginx-based frontend setup
+- Node.js backend with load balancing (upstream configuration)
+- Python-based database service layer
+- Dockerized services deployed via Docker Compose
+- Fully automated CI/CD pipeline for deployment on EC2
 
 ---
 
-## ⚙️ Tech Stack
+## 🏗️ System Architecture
 
-* **Frontend:** Nginx (Static Hosting)
-* **Backend:** Node.js (Express)
-* **Database:** MariaDB
-* **CI/CD:** GitHub Actions
-* **Containerization:** Docker
+### 🔹 Frontend Layer
+- Built using **Nginx**
+- Custom `nginx.conf` configuration
+- Serves static frontend content efficiently
+- Acts as entry point for the application
 
----
+### 🔹 Backend Layer
+- Built using **Node.js**
+- Load balancing implemented using **Nginx upstream**
+- Multiple backend containers for high availability
 
-## 🧱 Services
-
-| Service  | Description                      |
-| -------- | -------------------------------- |
-| frontend | Nginx container (port 80 → 8080) |
-| backend1 | Node.js backend instance         |
-| backend2 | Node.js backend instance         |
-| mariadb  | Database container               |
+### 🔹 Database Layer
+- Python-based service layer (database interaction/logic layer)
+- Containerized and managed via Docker
 
 ---
 
-## 🔄 CI/CD Pipeline Flow
+## ☁️ Infrastructure (AWS + Terraform)
 
-1. Push code to `main`
-2. GitHub Actions:
-
-   * Builds Docker images
-   * Pushes to Docker Hub
-3. Copies `docker-compose.yml` to EC2
-4. SSH into EC2:
-
-   * Installs Docker & Compose
-   * Pulls latest images
-   * Runs containers
+- AWS EC2 instance provisioned using Terraform
+- Remote state stored in **S3**
+- State locking enabled using **DynamoDB**
+- Fully reproducible infrastructure setup
 
 ---
 
-## 📦 Docker Compose
+## 🐳 Containerization (Docker)
+
+All services are containerized:
+
+- Frontend → Nginx container (custom config)
+- Backend → Node.js API containers (load balanced)
+- Database layer → Python service container
+
+Managed using:
 
 ```bash
 docker compose up -d
-```
-
----
-
-## 🔐 Environment Variables
-
-Managed securely using GitHub Secrets:
-
-* DB credentials
-* EC2 SSH key
-* Docker Hub credentials
-
----
-
-## 🚀 Deployment
-
-Application is deployed on:
-
-```
-http://<EC2-PUBLIC-IP>:8080
-```
-
----
-
-## 🛠️ Key Features
-
-* Multi-container architecture
-* Automated deployment pipeline
-* Load-ready backend structure
-* Secure environment handling
-* Scalable design
-
----
-
-## 📚 Learning Outcomes
-
-This project demonstrates:
-
-* Real-world DevOps workflow
-* Container orchestration
-* CI/CD automation
-* Cloud deployment
-
----
-
-## 🧠 Future Improvements
-
-* Nginx Load Balancer (backend1 + backend2)
-* Health checks & auto-restart
-* Zero downtime deployment
-* Terraform full automation
-
----
-
-## 👨‍💻 Author
-
-**ARIKARAN**
-
----
