@@ -11,10 +11,11 @@ jobs:
 
     steps:
 
+    # 🔹 Checkout code
     - name: Checkout code
       uses: actions/checkout@v3
 
-    # 🔐 Docker login
+    # 🔐 Docker login (needed for push)
     - name: Login DockerHub
       uses: docker/login-action@v2
       with:
@@ -32,7 +33,18 @@ jobs:
       run: |
         docker build -t ${{ secrets.DOCKER_USERNAME }}/frontend:v1 ./frontend
         docker push ${{ secrets.DOCKER_USERNAME }}/frontend:v1
-        # 🔹 Deploy
+
+    # 📁 COPY docker-compose.yml + .env TO EC2 (🔥 IMPORTANT)
+    - name: Copy files to EC2
+      uses: appleboy/scp-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "docker-compose.yml,.env"
+        target: "/home/ec2-user/"
+
+    # 🚀 DEPLOY
     - name: SSH Deploy
       uses: appleboy/ssh-action@v1.0.3
       with:
@@ -40,36 +52,34 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd ~
+          cd /home/ec2-user
 
-          # install docker
+          echo "📂 Files in EC2:"
+          ls -l
+
+          # install docker if missing
           if ! command -v docker &> /dev/null
           then
+            sudo yum update -y
             sudo yum install -y docker
             sudo systemctl start docker
             sudo usermod -aG docker ec2-user
-            newgrp docker
           fi
 
-          # install docker compose plugin
+          # install docker compose
           if ! docker compose version &> /dev/null
           then
-          sudo mkdir -p /usr/local/lib/docker/cli-plugins
-          sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
-          -o /usr/local/lib/docker/cli-plugins/docker-compose
-          sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose 
+            sudo mkdir -p /usr/local/lib/docker/cli-plugins
+            sudo curl -SL https://github.com/docker/compose/releases/latest/download/docker-compose-linux-x86_64 \
+            -o /usr/local/lib/docker/cli-plugins/docker-compose
+            sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
           fi
-          # verify install
+
+          # verify
           docker compose version
-          # go to home (where docker-compose.yml is copied)
-          cd ~
 
-      
-
-          # pull latest images (including mariadb automatically)
-          docker compose pull
+          # pull latest images
+          docker compose -f docker-compose.yml pull
 
           # restart containers
-          docker compose up -d --remove-orphans
-
-   
+          docker compose -f docker-compose.yml up -d --remove-orphans
