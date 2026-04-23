@@ -8,6 +8,12 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    
+    healthcheck:
+     test: ["CMD", "healthcheck.sh", "--connect"]
+     interval: 10s
+     timeout: 5s
+     retries: 10
    
 
   backend1:
@@ -19,7 +25,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     depends_on:
-      - mariadb
+     mariadb:
+      condition: service_healthy
 
   backend2:
     image: arikaran0007/backend:v1
@@ -30,7 +37,8 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     depends_on:
-      - mariadb
+     mariadb:
+      condition: service_healthy
 
   frontend:
     image: arikaran0007/frontend:v1
