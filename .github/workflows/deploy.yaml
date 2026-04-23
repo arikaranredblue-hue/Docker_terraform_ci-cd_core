@@ -79,7 +79,10 @@ jobs:
           docker compose version
 
           # pull latest images
-          docker compose -f docker-compose.yml pull
+          docker compose -f docker-compose.yaml pull
+          
+          # stop old containers
+          docker compose -f docker-compose.yaml down
 
           # restart containers
-          docker compose -f docker-compose.yml up -d --remove-orphans
+          docker compose -f docker-compose.yaml up -d --remove-orphans
